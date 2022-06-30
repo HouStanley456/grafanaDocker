@@ -1,0 +1,72 @@
+global:
+  scrape_interval: 5s # 多久獲取一次目標
+  evaluation_interval: 15s # 多久評估一次規則
+#  scrape_timeout: 5s # Can not > scrape_interval`
+#  query_log_file: /prometheus/query.log
+
+rule_files:
+  - alerts/*.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+      - targets:
+        # Alertmanager's default port is 9093
+        - alertmanager:9093
+
+scrape_configs:
+  - job_name: 'nodeexporter'
+    metrics_path: /metrics
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/nodeexporter.yml
+        refresh_interval: 3m 
+  - job_name: 'cadvisor'
+    metrics_path: /metrics
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/cadvisor.yml
+        refresh_interval: 3m 
+  - job_name: 'postgresql-exporter'
+    metrics_path: /metrics
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/postgresqlexporter.yml
+        refresh_interval: 3m 
+  - job_name: 'es-exporter'
+    scrape_interval: 60s
+    scrape_timeout:  30s
+    metrics_path: /metrics
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/elasticsearchexporter.yml
+        refresh_interval: 3m 
+
+  - job_name: 'pushgateway'
+    scrape_interval: 5s
+    honor_labels: true
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/pushgateway.yml
+        refresh_interval: 3m
+
+  - job_name: 'otel-collector'
+    scrape_interval: 10s
+    static_configs:
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/otel.yml
+
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['192.168.101.129:9323']
+        labels:
+          group: 'local'
+
+  - job_name: 'prometheus'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          group: 'local'
+  

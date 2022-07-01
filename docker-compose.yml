@@ -69,7 +69,7 @@ services:
     volumes:
       - grafana_pv:/var/lib/grafana # docker volume create grafana_pv
       - ./grafana/provisioning:/etc/grafana/provisioning
-      - ./grafana.ini:/usr/share/grafana/conf/default.ini
+      - ./grafana.ini:/usr/share/grafana/conf/defaults.ini
     env_file:
       - .env.grfana
     restart: unless-stopped
